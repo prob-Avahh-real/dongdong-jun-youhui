@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="动动菌友荟">
+  <meta name="theme-color" content="#3a5a2a">
+  <meta name="description" content="动动菌友荟 - 移动端真菌世界生活模拟小游戏">
+  <title>动动菌友荟 🍄</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Apple Touch Icon (SVG inline) -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='36' fill='%233a5a2a'/><text x='90' y='120' text-anchor='middle' font-size='100'>🍄</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍄</text></svg>">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="game-container">
+    <!-- Orientation Hint -->
+    <div id="orientation-hint">
+      <div class="rotate-icon">📱</div>
+      <p>请竖屏使用 🍄</p>
+      <p style="font-size:13px;color:#999;margin-top:8px">旋转设备以获得最佳体验</p>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading">
+      <div class="leaf">🍄</div>
+      <h1>动动菌友荟</h1>
+      <div class="subtitle">Dong Dong Jun You Hui</div>
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+      <div id="start-menu" style="display:none">
+        <p class="start-hint">检测到已有存档，请选择：</p>
+        <button id="btn-newgame" class="start-btn newgame">🌱 新的冒险</button>
+        <button id="btn-continue" class="start-btn continue">📂 继续冒险</button>
+      </div>
+    </div>
+
+    <!-- Game Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div class="hud-item" id="bells-display">🍄 500</div>
+      <div class="hud-item" id="name-display">🧑 ???</div>
+      <div class="hud-item" id="time-display">☀️ 08:00</div>
+    </div>
+
+    <!-- Map Button -->
+    <button id="btn-map" title="地图">🗺️</button>
+
+    <!-- Virtual Joystick -->
+    <div id="joystick-zone">
+      <div id="joystick-base">
+        <div id="joystick-thumb"></div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div id="action-buttons">
+      <button class="action-btn" id="btn-interact" title="互动">🤝</button>
+      <button class="action-btn" id="btn-bag" title="背包">🎒</button>
+    </div>
+
+    <!-- Dialog Box -->
+    <div id="dialog-box">
+      <div id="dialog-name"></div>
+      <div id="dialog-text"></div>
+      <div id="dialog-continue">▼ 点击继续</div>
+    </div>
+
+    <!-- Inventory Modal -->
+    <div id="inventory-modal">
+      <h3>🎒 菌菇背包</h3>
+      <div id="inventory-grid"></div>
+      <button id="btn-close-inventory">关闭</button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"></div>
+  </div>
+
+  <script src="js/game.js"></script>
+</body>
+</html>

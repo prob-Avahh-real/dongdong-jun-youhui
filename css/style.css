@@ -1,0 +1,266 @@
+/* 动动菌友荟 - 移动端优化版 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --mario-sky: #5c94fc;
+  --mario-green: #6bbd45;
+  --mario-dark: #4a2a0a;
+  --mario-gold: #f5a623;
+  --mario-red: #e52521;
+  --mario-white: #f8f8f0;
+  --ui-bg: rgba(0,0,0,0.72);
+  --ui-border: rgba(255,255,255,0.25);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+  position: fixed; top: 0; left: 0;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  font-family: 'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background: #000;
+}
+
+#game-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+canvas#game-canvas {
+  display: block;
+  width: 100%; height: 100%;
+  image-rendering: pixelated;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* ---- HUD ---- */
+#hud {
+  position: absolute;
+  top: calc(10px + var(--safe-top));
+  left: calc(10px + var(--safe-left));
+  right: calc(10px + var(--safe-right));
+  display: flex; justify-content: space-between; align-items: center;
+  pointer-events: none; z-index: 10;
+}
+.hud-item {
+  background: var(--ui-bg); color: #fff;
+  padding: 8px 18px; border-radius: 20px;
+  font-size: 15px; font-weight: bold;
+  display: flex; align-items: center; gap: 6px;
+  border: 1.5px solid var(--ui-border);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  letter-spacing: 1px;
+}
+#time-display { font-size: 16px; }
+
+/* ---- Joystick ---- */
+#joystick-zone {
+  position: absolute;
+  bottom: calc(24px + var(--safe-bottom));
+  left: calc(24px + var(--safe-left));
+  width: 130px; height: 130px; z-index: 20;
+  touch-action: none;
+}
+#joystick-base {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  border: 3px solid rgba(255,255,255,0.35);
+  position: relative;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+#joystick-thumb {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: rgba(255,255,255,0.55);
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%); transition: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* ---- Action Buttons ---- */
+#action-buttons {
+  position: absolute;
+  bottom: calc(32px + var(--safe-bottom));
+  right: calc(18px + var(--safe-right));
+  display: flex; flex-direction: column; gap: 14px; z-index: 20;
+}
+.action-btn {
+  width: 60px; height: 60px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.18); color: #fff;
+  font-size: 24px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: transform 0.1s, background 0.1s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.action-btn:active { transform: scale(0.88); background: rgba(255,255,255,0.35); }
+#btn-interact {
+  background: rgba(107,189,69,0.55); border-color: var(--mario-green);
+  font-size: 20px; font-weight: bold;
+}
+
+/* ---- Dialog ---- */
+#dialog-box {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(180deg, rgba(60,30,10,0.96), rgba(40,18,4,0.98));
+  color: #fff;
+  padding: 20px 24px calc(20px + var(--safe-bottom));
+  border-top: 4px solid var(--mario-gold);
+  border-radius: 20px 20px 0 0;
+  z-index: 30; display: none;
+  font-size: 16px; line-height: 1.7;
+  max-height: 45vh; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#dialog-box.show { display: block; animation: slideUp 0.3s ease; }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+#dialog-name { font-weight: bold; color: var(--mario-gold); margin-bottom: 6px; font-size: 16px; }
+#dialog-text { margin-bottom: 8px; letter-spacing: 0.5px; }
+#dialog-continue { text-align: center; color: var(--mario-gold); font-size: 13px; animation: blink 1.2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ---- Inventory ---- */
+#inventory-modal {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.88); z-index: 40;
+  display: none; flex-direction: column; align-items: center;
+  justify-content: center; padding: 20px;
+  padding-top: calc(20px + var(--safe-top));
+  padding-bottom: calc(20px + var(--safe-bottom));
+}
+#inventory-modal.show { display: flex; }
+#inventory-modal h3 {
+  color: var(--mario-gold); font-size: 22px;
+  margin-bottom: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+#inventory-grid {
+  display: grid; grid-template-columns: repeat(4,70px);
+  gap: 10px; justify-content: center;
+}
+.inventory-slot {
+  width: 70px; height: 70px;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.25);
+  border-radius: 12px; display: flex;
+  flex-direction: column; align-items: center; justify-content: center;
+  font-size: 28px; color: #fff;
+}
+.inventory-slot .count { font-size: 12px; color: #ccc; margin-top: 2px; }
+#btn-close-inventory {
+  margin-top: 24px; padding: 12px 44px;
+  background: var(--mario-green); color: #fff;
+  border: none; border-radius: 24px; font-size: 17px; font-weight: bold;
+  cursor: pointer; box-shadow: 0 4px 0 #3a7a20;
+  transition: transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+#btn-close-inventory:active { transform: translateY(2px); box-shadow: 0 2px 0 #3a7a20; }
+
+/* ---- Map Button ---- */
+#btn-map {
+  position: absolute;
+  top: calc(60px + var(--safe-top));
+  right: calc(14px + var(--safe-right));
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--ui-bg); color: #fff;
+  border: 2px solid var(--ui-border); font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 15; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---- Toast ---- */
+#toast {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  background: rgba(0,0,0,0.8); color: var(--mario-gold);
+  padding: 12px 28px; border-radius: 24px;
+  font-size: 15px; font-weight: bold; z-index: 50;
+  pointer-events: none; opacity: 0; transition: opacity 0.3s;
+  border: 1.5px solid rgba(255,255,255,0.2);
+}
+#toast.show { opacity: 1; }
+
+/* ---- Orientation Hint ---- */
+#orientation-hint {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.92); z-index: 200;
+  flex-direction: column; align-items: center; justify-content: center;
+  color: #fff; font-size: 18px; letter-spacing: 2px;
+}
+#orientation-hint .rotate-icon { font-size: 64px; animation: rotateHint 2s ease-in-out infinite; }
+@keyframes rotateHint { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(90deg)} }
+
+/* ---- Loading Screen ---- */
+#loading {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, #5c94fc 0%, #3a6ad4 40%, #1a3a6a 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 100; color: #fff;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+}
+#loading h1 {
+  font-size: 38px; font-weight: 900; letter-spacing: 4px;
+  text-shadow: 3px 3px 0 rgba(0,0,0,0.3), 0 0 30px rgba(255,255,255,0.15);
+  margin-bottom: 6px;
+}
+#loading .subtitle {
+  font-size: 15px; color: rgba(255,255,255,0.7);
+  letter-spacing: 2px; margin-bottom: 32px;
+}
+#loading .leaf { font-size: 56px; animation: float 2s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+#loading .progress-bar {
+  width: 240px; height: 6px; background: rgba(255,255,255,0.2);
+  border-radius: 3px; overflow: hidden;
+}
+#loading .progress-fill {
+  height: 100%; background: #fff;
+  border-radius: 3px; width: 0%; transition: width 0.3s;
+  box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+/* ---- Start Menu ---- */
+#start-menu {
+  text-align: center; margin-top: 24px;
+}
+#start-menu .start-hint {
+  color: rgba(255,255,255,0.85); font-size: 15px;
+  margin-bottom: 16px; letter-spacing: 1px;
+}
+.start-btn {
+  display: block; width: 240px; margin: 10px auto;
+  padding: 14px 0; border: none; border-radius: 28px;
+  font-size: 17px; font-weight: bold; cursor: pointer;
+  font-family: inherit; letter-spacing: 2px;
+  transition: transform 0.1s, box-shadow 0.1s;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+  -webkit-tap-highlight-color: transparent;
+}
+.start-btn:active { transform: scale(0.94); }
+.start-btn.newgame {
+  background: var(--mario-green); color: #fff;
+  box-shadow: 0 6px 0 #3a7a20, 0 8px 20px rgba(0,0,0,0.3);
+}
+.start-btn.newgame:active { box-shadow: 0 3px 0 #3a7a20, 0 4px 10px rgba(0,0,0,0.3); transform: translateY(3px) scale(0.94); }
+.start-btn.continue {
+  background: var(--mario-gold); color: #4a2a0a;
+  box-shadow: 0 6px 0 #c07a10, 0 8px 20px rgba(0,0,0,0.3);
+}
+.start-btn.continue:active { box-shadow: 0 3px 0 #c07a10, 0 4px 10px rgba(0,0,0,0.3); transform: translateY(3px) scale(0.94); }
