@@ -1,0 +1,18 @@
+{
+  "name": "动动菌友荟",
+  "short_name": "菌友荟",
+  "description": "移动端真菌世界生活模拟小游戏",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#3a5a2a",
+  "theme_color": "#3a5a2a",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='36' fill='%233a5a2a'/><text x='90' y='120' text-anchor='middle' font-size='100'>🍄</text></svg>",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

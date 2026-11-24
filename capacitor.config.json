@@ -1,0 +1,11 @@
+{
+  "appId": "com.skat.dongdongjunyouhui",
+  "appName": "动动菌友荟",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

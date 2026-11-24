@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">动动菌友荟</string>
+    <string name="title_activity_main">动动菌友荟</string>
+    <string name="package_name">com.skat.dongdongjunyouhui</string>
+    <string name="custom_url_scheme">com.skat.dongdongjunyouhui</string>
+</resources>
